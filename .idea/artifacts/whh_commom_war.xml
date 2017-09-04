@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="whh-commom:war">
+    <output-path>$PROJECT_DIR$/whh-commom/target</output-path>
+    <root id="archive" name="whh-commom.war">
+      <element id="artifact" artifact-name="whh-commom:war exploded" />
+    </root>
+  </artifact>
+</component>

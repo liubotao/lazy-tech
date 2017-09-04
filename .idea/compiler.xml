@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="whh-commons-format" />
+        <module name="whh-commons-generator" />
+        <module name="whh-commons-mq" />
+        <module name="whh-commons-mybatis" />
+        <module name="whh-commons-spring" />
+        <module name="whh-commons-utils" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="lazy-tech" target="1.5" />
+      <module name="whh-commom" target="1.5" />
+      <module name="whh-commoms-utils" target="1.5" />
+      <module name="whh-common" target="1.5" />
+      <module name="whh-commons-format" target="1.5" />
+      <module name="whh-commons-generator" target="1.5" />
+      <module name="whh-commons-mq" target="1.5" />
+      <module name="whh-commons-mybatis" target="1.5" />
+      <module name="whh-commons-spring" target="1.5" />
+      <module name="whh-commons-util" target="1.5" />
+      <module name="whh-commons-utils" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
