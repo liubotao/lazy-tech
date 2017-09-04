@@ -8,8 +8,8 @@
   <modules>
     <module>whh-common</module>
   </modules>
-  <name>lazy-tech Maven Webapp</name>
-  <url>http://maven.apache.org</url>
+  <name>lazy-tech</name>
+  <url>http://whh.likie.win</url>
 
   <dependencies>
     <dependency>

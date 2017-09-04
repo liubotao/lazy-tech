@@ -7,17 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>whh-commons-generator</artifactId>
-    <packaging>war</packaging>
-    <name>whh-commons-generator Maven Webapp</name>
-    <url>http://maven.apache.org</url>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+
     <build>
         <finalName>whh-commons-generator</finalName>
     </build>
