@@ -17,6 +17,7 @@
         <module>whh-commons-format</module>
         <module>whh-commons-ukid</module>
         <module>whh-commons-db</module>
+        <module>whh-commons-web</module>
     </modules>
 
     <properties>
