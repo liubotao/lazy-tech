@@ -40,6 +40,20 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.axis:axis:1.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.axis:axis-jaxrpc:1.4" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.33" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:dubbo-common:2.8.4" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.20.0-GA" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:hessian-lite:3.2.1-fixed-2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-core:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.0.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.4.4" level="project" />
+    <orderEntry type="library" name="Maven: javax.mail:mail:1.5.0-b01" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
   </component>
 </module>

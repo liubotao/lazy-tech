@@ -49,13 +49,25 @@
             <version>2.6</version>
         </dependency>
 
-
         <!-- druid -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
             <version>${druid.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-core</artifactId>
+            <version>1.3.5</version>
+        </dependency>
+
+        <!--依赖项目-->
+        <dependency>
+            <groupId>com.whh</groupId>
+            <artifactId>whh-commons-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>whh-commons-mybatis</finalName>
