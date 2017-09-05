@@ -1,7 +1,7 @@
 package ${package_name}.manager.impl;
 
-import com.wwwarehouse.commons.mybatis.BaseService;
-import com.wwwarehouse.commons.mybatis.BaseServiceImpl;
+import com.whh.common.mybatis.BaseService;
+import com.whh.common.mybatis.BaseServiceImpl;
 import ${package_name}.dao.mapper.${model}Mapper;
 import ${package_name}.dao.model.${model};
 import ${package_name}.dao.model.${model}Example;

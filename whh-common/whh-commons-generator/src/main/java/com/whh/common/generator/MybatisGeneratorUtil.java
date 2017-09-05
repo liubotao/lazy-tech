@@ -1,6 +1,6 @@
 package com.whh.common.generator;
 
-import com.wwwarehouse.commons.utils.StringUtils;
+import com.whh.common.utils.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.velocity.VelocityContext;
@@ -66,7 +66,7 @@ public class MybatisGeneratorUtil {
             String table_names,
             String package_name,
             Map<String, String> last_insert_id_tables) throws Exception {
-        generator(targetProject, module, table_names, package_name, last_insert_id_tables, "oralce");
+        generator(targetProject, module, table_names, package_name, last_insert_id_tables, "mysql");
     }
 
     /**
@@ -167,7 +167,7 @@ public class MybatisGeneratorUtil {
 
         System.out.println("========== 开始生成Manager ==========");
         String ctime = new SimpleDateFormat("yyyy/M/d").format(new Date());
-        String servicePath = ManagerModule + "/src/main/java/" + package_name.replaceAll("\\.", "/") + "/manager";
+        String servicePath = ManagerModule + "/src/main/java/" + package_name.replaceAll("\\.", "/") + "/biz/manager";
         String serviceImplPath = servicePath + "/impl";
         String serviceMockPath = servicePath + "/mock";
         for (int i = 0; i < tables.size(); i++) {

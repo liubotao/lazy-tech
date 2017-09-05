@@ -1,6 +1,6 @@
 package ${package_name}.manager;
 
-import com.wwwarehouse.commons.mybatis.BaseService;
+import com.whh.common.mybatis.BaseService;
 import ${package_name}.dao.model.${model};
 import ${package_name}.dao.model.${model}Example;
 

@@ -17,7 +17,7 @@ import java.security.SecureRandom;
  */
 public class AESUtil {
 
-    private static final String encodeRules = "zheng";
+    private static final String encodeRules = "whh";
 
     /**
      * 加密
@@ -128,7 +128,7 @@ public class AESUtil {
 
     public static void main(String[] args) {
         String[] keys = {
-                "", "123456"
+                "", "WHH88913233123"
         };
         System.out.println("key | AESEncode | AESDecode");
         for (String key : keys) {
@@ -138,6 +138,7 @@ public class AESUtil {
             String decryptString = AESDecode(encryptString);
             System.out.println(decryptString);
         }
+        System.out.println(AESEncode("WHH88913233123"));
     }
 
 }

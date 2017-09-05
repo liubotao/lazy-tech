@@ -1,4 +1,4 @@
-package com.whh.common.mybatis.plugin;
+package com.whh.common.generator;
 
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
