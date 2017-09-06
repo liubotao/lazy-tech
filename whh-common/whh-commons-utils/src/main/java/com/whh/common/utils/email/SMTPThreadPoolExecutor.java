@@ -47,7 +47,7 @@ public class SMTPThreadPoolExecutor {
                 String password = "WHH88913233123"; // 发件人密码
                 String smtpHost = "smtp.yandex.com"; // 邮件服务器
 
-                String to = "rece@edu-ing.ml"; // 收件人，多个收件人以半角逗号分隔
+                String to = "623281847@qq.com"; // 收件人，多个收件人以半角逗号分隔
                 String cc = "rece1faf@edu-ing.ml"; // 抄送，多个抄送以半角逗号分隔
                 String subject = "这是邮件的主题"; // 主题
                 String body = "<h2 style='color:red'>这是邮件的正文</h2>"; // 正文，可以用html格式的哟
