@@ -218,12 +218,12 @@ public class DatePluginMysql extends PluginAdapter {
                     sqlSection = content.replace(timeSection, SYSDATE);
                 }
 
-                if (elementList.get(i) instanceof XmlElement) {
-                    XmlElement xmlElement = (XmlElement)elementList.get(i);
-                    xmlElement.getElements().set(0, new TextElement(sqlSection));
-                } else {
-                    elementList.set(i, new TextElement(sqlSection));
-                }
+                //                if (elementList.get(i) instanceof XmlElement) {
+//                    XmlElement xmlElement = (XmlElement)elementList.get(i);
+//                    xmlElement.getElements().set(0, new TextElement(sqlSection));
+//                } else {
+                elementList.set(i, new TextElement(sqlSection));
+//                }
                 break;
             }
         }
