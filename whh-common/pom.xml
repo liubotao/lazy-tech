@@ -18,6 +18,7 @@
         <module>whh-commons-ukid</module>
         <module>whh-commons-db</module>
         <module>whh-commons-web</module>
+        <module>whh-commons-api</module>
     </modules>
 
     <properties>
