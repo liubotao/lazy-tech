@@ -1,4 +1,4 @@
-package com.whh.common.api.AliyunApi;
+package com.whh.common.api.aliyun;
 
 /**
  * Created by huahui.wu on 2017/9/14.

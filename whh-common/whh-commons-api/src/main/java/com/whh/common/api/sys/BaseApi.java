@@ -1,4 +1,4 @@
-package com.whh.common.api;
+package com.whh.common.api.sys;
 
 import com.alibaba.fastjson.JSONObject;
 import com.whh.common.utils.util.HttpUtils;
@@ -31,7 +31,6 @@ public abstract class BaseApi {
     protected static JSONObject request(String host, String path, String methodGet, Map<String, String> headers, Map<String, String> querys) {
         try {
             HttpResponse response = HttpUtils.doGet(host, path, methodGet, headers, querys);
-
             //获取response的body
             return JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
         } catch (Exception e) {

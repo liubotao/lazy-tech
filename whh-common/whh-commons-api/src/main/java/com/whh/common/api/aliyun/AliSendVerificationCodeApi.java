@@ -1,4 +1,4 @@
-package com.whh.common.api.AliyunApi;
+package com.whh.common.api.aliyun;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -15,10 +15,10 @@ public class AliSendVerificationCodeApi extends AliyunApi {
      * @param SignName     签名名称
      * @param TemplateCode 模板CODE
      * @param phoneNum     目标手机号,多条记录可以英文逗号分隔
-     * @param param 模板定义参数
+     * @param param        模板定义参数
      * @return
      */
-    public static int sendVerificationCode(String SignName, String TemplateCode, String phoneNum, JSONObject param) {
+    public static Boolean sendVerificationCode(String SignName, String TemplateCode, String phoneNum, JSONObject param) {
         final String host = "http://sms.market.alicloudapi.com";
         final String path = "/singleSendSms";
         Map<String, String> headers = new HashMap<String, String>();
@@ -30,7 +30,16 @@ public class AliSendVerificationCodeApi extends AliyunApi {
         map.put("SignName", SignName);
         map.put("TemplateCode", TemplateCode);
 
-        request(host, path, methodGet, headers, map);
-        return 0;
+        JSONObject json = request(host, path, methodGet, headers, map);
+
+        Boolean result = json.getBoolean("success");
+        if (result) {
+            if (log.isInfoEnabled()) {
+                log.info("短信发送成功");
+            }
+        } else {
+            log.error("发送短信失败：" + json.getString("message"));
+        }
+        return result;
     }
 }
