@@ -16,7 +16,7 @@ public class RandomCodeUtil {
      * 生成指定长度的验证码:数字+大小写英文字母
      *
      * @param length
-     * @param isNumeric              验证码是否为纯数字
+     * @param isNumeric 验证码是否为纯数字
      * @return String
      * @author Q
      */
