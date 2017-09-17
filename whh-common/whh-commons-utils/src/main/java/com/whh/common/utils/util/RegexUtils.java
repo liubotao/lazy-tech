@@ -173,5 +173,18 @@ public class RegexUtils {
         return Pattern.matches(regex, macAddress);
     }
 
+    /**
+     * 判断字符串str是否符合正则表达式reg
+     *
+     * @param str 需要处理的字符串
+     * @param reg 正则
+     * @return 是否匹配
+     */
+    public final static boolean isMatche(String str, String reg) {
+        Pattern pattern = Pattern.compile(reg);
+        Matcher isNum   = pattern.matcher(str);
+        return isNum.matches();
+    }
+
      
 }
