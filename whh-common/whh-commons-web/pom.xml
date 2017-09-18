@@ -7,9 +7,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>whh-commons-web</artifactId>
-    <packaging>war</packaging>
-    <name>whh-commons-web Maven Webapp</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
