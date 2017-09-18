@@ -26,7 +26,7 @@ public class OssClient {
     /**
      * 初始化OSS
      *
-     * @param endpoint        endpoint以杭州为例，其它region请按实际情况填写
+     * @param endpoint        endpoint以杭州为例，其它region请按实际情况填写 "http://oss-cn-hangzhou.aliyuncs.com"
      * @param accessKeyId     accessKeyId
      * @param accessKeySecret accessKeySecret
      */
