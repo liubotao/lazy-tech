@@ -14,6 +14,8 @@ import java.io.File;
 public class OssClientTest {
 
     private OssClient ossClient = null;
+    private String bucketName = "oss-yushang-test";
+    private String key = "90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9";
 
     @Before
     public void initDate() {
@@ -26,37 +28,38 @@ public class OssClientTest {
 
     @Test
     public void createBucket() throws Exception {
-        ossClient.createBucket("oss-yushang-test", null, StorageClass.IA);
+        ossClient.createBucket(bucketName, null, StorageClass.IA);
     }
 
     @Test
     public void deleteBucket() throws Exception {
-        ossClient.deleteBucket("oss-yushang-test");
+        ossClient.deleteBucket(bucketName);
     }
 
     @Test
     public void uploadFile() throws Exception {
 
-        ossClient.uploadFile("oss-yushang-test", "90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9", "D:\\用户目录\\下载\\question.jpg");
+        ossClient.uploadFile(bucketName, key, "D:\\用户目录\\下载\\question.jpg");
     }
 
     @Test
     public void uploadFileNew() throws Exception {
 
-        ossClient.uploadFileNew("oss-yushang-test", "90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9", "D:\\用户目录\\下载\\question.jpg");
+        ossClient.uploadFileNew(bucketName, key, "D:\\用户目录\\下载\\question.jpg");
     }
+
     @Test
     public void test() throws Exception {
         File tempFile = new File("/temp.jpg");
-        QrcodeUtils.gen("90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9", tempFile);
-        ossClient.uploadFileNew("oss-yushang-test", "90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9", tempFile.getPath());
+        QrcodeUtils.gen(key, tempFile);
+        ossClient.uploadFileNew(bucketName, key, tempFile.getPath());
         tempFile.deleteOnExit();
 
     }
 
     @Test
     public void putFolder() throws Exception {
-        ossClient.createFolder("oss-yushang-test", "90UNuo5QjBJuNWCdIM1DAyzgZ0IKV9", "parent_directory/");
+        ossClient.createFolder(bucketName, "parent_directory/");
     }
 
 }
