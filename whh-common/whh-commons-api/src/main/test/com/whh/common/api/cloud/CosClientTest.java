@@ -1,4 +1,4 @@
-package com.whh.common.api.tencent;
+package com.whh.common.api.cloud;
 
 import com.whh.common.api.model.CosKey;
 import org.junit.Test;
@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * Created by huahui.wu on 2017/9/18.
  */
-public class CosApiTest {
+public class CosClientTest {
     @Test
     public void uploadFile() throws Exception {
         CosKey cosKey = new CosKey();
@@ -14,8 +14,8 @@ public class CosApiTest {
         cosKey.setSecretId("AKIDy5Qb2m96V4qqSd8JiKm8svtwsetep3o5");
         cosKey.setSecretKey("7shVFdkkySHqmWIK74eFXEF38X9CsE7L");
         cosKey.setRegion("sh");
-        CosApi cosApi = new CosApi(cosKey);
-        String request = cosApi.createFolder("yushang", "/blogs/test/");
+        CosClient cosClient = new CosClient(cosKey);
+        String request = cosClient.createFolder("yushang", "/blogs/test/");
 
 
     }

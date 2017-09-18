@@ -1,4 +1,4 @@
-package com.whh.common.api.tencent;
+package com.whh.common.api.cloud;
 
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -9,12 +9,16 @@ import com.qcloud.cos.request.*;
 import com.qcloud.cos.sign.Credentials;
 import com.whh.common.api.model.CosKey;
 import com.whh.common.api.model.HttpContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 腾讯 对象存储Api
+ * doc:https://www.qcloud.com/document/product/436/6273
  * Created by huahui.wu on 2017/9/18.
  */
-public class CosApi {
+public class CosClient {
+    private static final Logger _log = LoggerFactory.getLogger(CosClient.class);
 
     private COSClient cosClient;
 
@@ -26,7 +30,7 @@ public class CosApi {
      * @param secretKey bucket secretKey
      * @param region    bucket 所在区域 比如广州(gz), 天津(tj), 上海(sh)
      */
-    public CosApi(Long appId, String secretId, String secretKey, String region) {
+    public CosClient(Long appId, String secretId, String secretKey, String region) {
         // 初始化客户端配置
         ClientConfig clientConfig = new ClientConfig();
         // 设置bucket所在的区域，比如广州(gz), 天津(tj)
@@ -42,11 +46,11 @@ public class CosApi {
      *
      * @param cosKey cos配置
      */
-    public CosApi(CosKey cosKey) {
-        new CosApi(cosKey.getAppId(), cosKey.getSecretId(), cosKey.getSecretKey(), cosKey.getRegion());
+    public CosClient(CosKey cosKey) {
+        new CosClient(cosKey.getAppId(), cosKey.getSecretId(), cosKey.getSecretKey(), cosKey.getRegion());
     }
 
-    public CosApi() {
+    public CosClient() {
 
     }
 
@@ -257,6 +261,15 @@ public class CosApi {
         }
         String listFolderRet = cosClient.listFolder(listFolderRequest);
         return listFolderRet;
+    }
+
+    /**
+     * 关闭资源
+     */
+    public void shutdown() {
+        // 关闭释放资源
+        cosClient.shutdown();
+        _log.info("关闭释放资源");
     }
 
 

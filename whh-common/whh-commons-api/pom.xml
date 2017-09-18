@@ -54,5 +54,14 @@
     </dependencies>
     <build>
         <finalName>whh-commons-api</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 </project>

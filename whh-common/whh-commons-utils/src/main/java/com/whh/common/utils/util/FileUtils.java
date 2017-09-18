@@ -6,9 +6,13 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.FileNameMap;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -485,11 +489,12 @@ public class FileUtils {
 
     /**
      * 罗列指定路径下的全部文件
-     * @param path 指定的路径
+     *
+     * @param path  指定的路径
      * @param child 是否罗列子目录
      * @return
      */
-    public final static List<File> listFile(File path,boolean child){
+    public final static List<File> listFile(File path, boolean child) {
         List<File> list = new ArrayList<>();
         File[] files = path.listFiles();
         if (valid.valid(files)) {
@@ -634,12 +639,13 @@ public class FileUtils {
 
     /**
      * 获取文件后缀名
+     *
      * @param file
      * @return
      */
-    public final static String suffix(File file){
-        String fileName=file.getName();
-        return fileName.substring(fileName.indexOf(".")+1);
+    public final static String suffix(File file) {
+        String fileName = file.getName();
+        return fileName.substring(fileName.indexOf(".") + 1);
     }
 
     /**
@@ -761,5 +767,40 @@ public class FileUtils {
         // 加密
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(bytes);
+    }
+
+    /**
+     * 根据文件计算出文件的MD5
+     *
+     * @param file
+     * @return
+     */
+    public static String getFileMD5(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+
+        MessageDigest digest = null;
+        FileInputStream in = null;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+
+        return bigInt.toString(16).toUpperCase();
     }
 }
