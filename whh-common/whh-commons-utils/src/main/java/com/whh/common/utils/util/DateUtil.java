@@ -26,6 +26,8 @@ public class DateUtil {
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String TIME_FORMAT = "HH:mm:ss";
     public static final String DATE_TIMEZONE = "GMT+8";
+    private static ThreadLocal<SimpleDateFormat> ThreadDateTime = new ThreadLocal<SimpleDateFormat>();
+
 
     private static final int[][] fields = {
             {Calendar.MILLISECOND},
@@ -38,6 +40,25 @@ public class DateUtil {
             {Calendar.MONTH, DateUtil.SEMI_MONTH},
             {Calendar.YEAR},
             {Calendar.ERA}};
+
+
+    private static SimpleDateFormat DateTimeInstance() {
+        SimpleDateFormat df = ThreadDateTime.get();
+        if (df == null) {
+            df = new SimpleDateFormat(DATE_TIME_FORMAT);
+            ThreadDateTime.set(df);
+        }
+        return df;
+    }
+
+    /**
+     * 获取当前日期时间
+     *
+     * @return 返回当前时间的字符串值
+     */
+    public static String currentDateTime() {
+        return DateTimeInstance().format(new Date());
+    }
 
     /**
      * 获取两个日期的时间差，单位：天

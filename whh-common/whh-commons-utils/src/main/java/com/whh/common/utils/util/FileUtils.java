@@ -6,9 +6,10 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.net.FileNameMap;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import java.net.URLConnection;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -322,6 +323,345 @@ public class FileUtils {
         br.close();
         fr.close();
         return datas;
+    }
+
+
+    /**
+     * 在文件末尾追加一行
+     *
+     * @param file     需要处理的文件
+     * @param str      添加的字符串
+     * @param encoding 指定写入的编码
+     * @return 是否成功
+     */
+    public final static boolean appendLine(File file, String str, String encoding) {
+        String lineSeparator = System.getProperty("line.separator", "\n");
+        try (
+                RandomAccessFile randomFile = new RandomAccessFile(file, "rw")
+        ) {
+            long fileLength = randomFile.length();
+            randomFile.seek(fileLength);
+            randomFile.write((lineSeparator + str).getBytes(encoding));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 将字符串写入到文件中
+     */
+    public final static boolean write(File file, String str) {
+        try (
+                RandomAccessFile randomFile = new RandomAccessFile(file, "rw")
+        ) {
+            randomFile.writeBytes(str);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 将字符串以追加的方式写入到文件中
+     */
+    public final static boolean writeAppend(File file, String str) {
+        try (
+                RandomAccessFile randomFile = new RandomAccessFile(file, "rw")
+        ) {
+            long fileLength = randomFile.length();
+            randomFile.seek(fileLength);
+            randomFile.writeBytes(str);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 将字符串以制定的编码写入到文件中
+     */
+    public final static boolean write(File file, String str, String encoding) {
+        try (
+                RandomAccessFile randomFile = new RandomAccessFile(file, "rw")
+        ) {
+            randomFile.write(str.getBytes(encoding));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 将字符串以追加的方式以制定的编码写入到文件中
+     */
+    public final static boolean writeAppend(File file, String str, String encoding) {
+        try (
+                RandomAccessFile randomFile = new RandomAccessFile(file, "rw")
+        ) {
+            long fileLength = randomFile.length();
+            randomFile.seek(fileLength);
+            randomFile.write(str.getBytes(encoding));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 快速清空一个超大的文件
+     *
+     * @param file 需要处理的文件
+     * @return 是否成功
+     */
+    public final static boolean cleanFile(File file) {
+        try (
+                FileWriter fw = new FileWriter(file)
+        ) {
+            fw.write("");
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 创建多级目录
+     *
+     * @param paths 需要创建的目录
+     * @return 是否成功
+     */
+    public final static boolean createPaths(String paths) {
+        File dir = new File(paths);
+        return !dir.exists() && dir.mkdir();
+    }
+
+    /**
+     * 创建文件支持多级目录
+     *
+     * @param filePath 需要创建的文件
+     * @return 是否成功
+     */
+    public final static boolean createFiles(String filePath) {
+        File file = new File(filePath);
+        File dir = file.getParentFile();
+        if (!dir.exists()) {
+            if (dir.mkdirs()) {
+                try {
+                    return file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件
+     *
+     * @param path 需要处理的文件
+     * @return 返回文件列表
+     */
+    public final static List<File> listFile(File path) {
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(listFile(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件
+     * @param path 指定的路径
+     * @param child 是否罗列子目录
+     * @return
+     */
+    public final static List<File> listFile(File path,boolean child){
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (child && file.isDirectory()) {
+                    list.addAll(listFile(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件包括文件夹
+     *
+     * @param path 需要处理的文件
+     * @return 返回文件列表
+     */
+    public final static List<File> listFileAll(File path) {
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                list.add(file);
+                if (file.isDirectory()) {
+                    list.addAll(listFileAll(file));
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件包括文件夹
+     *
+     * @param path   需要处理的文件
+     * @param filter 处理文件的filter
+     * @return 返回文件列表
+     */
+    public final static List<File> listFileFilter(File path, FilenameFilter filter) {
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(listFileFilter(file, filter));
+                } else {
+                    if (filter.accept(file.getParentFile(), file.getName())) {
+                        list.add(file);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 获取指定目录下的特点文件,通过后缀名过滤
+     *
+     * @param dirPath  需要处理的文件
+     * @param postfixs 文件后缀
+     * @return 返回文件列表
+     */
+    public final static List<File> listFileFilter(File dirPath, final String postfixs) {
+        /*
+        如果在当前目录中使用Filter讲只罗列当前目录下的文件不会罗列孙子目录下的文件
+        FilenameFilter filefilter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(postfixs);
+            }
+        };
+        */
+        List<File> list = new ArrayList<File>();
+        File[] files = dirPath.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(listFileFilter(file, postfixs));
+                } else {
+                    String fileName = file.getName().toLowerCase();
+                    if (fileName.endsWith(postfixs.toLowerCase())) {
+                        list.add(file);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 在指定的目录下搜寻文个文件
+     *
+     * @param dirPath  搜索的目录
+     * @param fileName 搜索的文件名
+     * @return 返回文件列表
+     */
+    public final static List<File> searchFile(File dirPath, String fileName) {
+        List<File> list = new ArrayList<>();
+        File[] files = dirPath.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(searchFile(file, fileName));
+                } else {
+                    String Name = file.getName();
+                    if (Name.equals(fileName)) {
+                        list.add(file);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 查找符合正则表达式reg的的文件
+     *
+     * @param dirPath 搜索的目录
+     * @param reg     正则表达式
+     * @return 返回文件列表
+     */
+    public final static List<File> searchFileReg(File dirPath, String reg) {
+        List<File> list = new ArrayList<>();
+        File[] files = dirPath.listFiles();
+        if (valid.valid(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(searchFile(file, reg));
+                } else {
+                    String Name = file.getName();
+                    if (RegexUtils.isMatche(Name, reg)) {
+                        list.add(file);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+
+    /**
+     * 获取文件后缀名
+     * @param file
+     * @return
+     */
+    public final static String suffix(File file){
+        String fileName=file.getName();
+        return fileName.substring(fileName.indexOf(".")+1);
+    }
+
+    /**
+     * 获取文件的Mime类型
+     *
+     * @param file 需要处理的文件
+     * @return 返回文件的mime类型
+     * @throws java.io.IOException
+     */
+    public final static String mimeType(String file) throws java.io.IOException {
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        return fileNameMap.getContentTypeFor(file);
+    }
+
+    /**
+     * 获取文件最后的修改时间
+     *
+     * @param file 需要处理的文件
+     * @return 返回文件的修改时间
+     */
+    public final static Date modifyTime(File file) {
+        return new Date(file.lastModified());
     }
 
     /**
