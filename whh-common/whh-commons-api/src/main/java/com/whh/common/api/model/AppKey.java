@@ -1,4 +1,4 @@
-package com.whh.common.api.sys;
+package com.whh.common.api.model;
 
 /**
  * Created by huahui.wu on 2017/9/15.

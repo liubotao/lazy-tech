@@ -22,6 +22,7 @@ public class AliIWeatherApiTest {
         query.put("ip","115.236.172.146");
         JSONObject jsonObject = AliIWeatherApi.getWeatherByIp(query);
         System.out.println(jsonObject);
+
     }
 
 }

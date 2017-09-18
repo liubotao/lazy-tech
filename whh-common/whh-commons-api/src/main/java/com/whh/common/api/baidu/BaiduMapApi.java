@@ -1,7 +1,7 @@
 package com.whh.common.api.baidu;
 
 import com.whh.common.api.interfaces.IMapApi;
-import com.whh.common.api.sys.AppKey;
+import com.whh.common.api.model.AppKey;
 
 /**
  * Created by huahui.wu on 2017/9/14.

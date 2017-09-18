@@ -2,7 +2,7 @@ package com.whh.common.api.interfaces;
 
 import com.whh.common.api.interfaces.enums.MapPlatform;
 import com.whh.common.api.interfaces.instancer.ApiInstancer;
-import com.whh.common.api.sys.AppKey;
+import com.whh.common.api.model.AppKey;
 
 /**
  * Created by huahui.wu on 2017/9/15.
