@@ -39,7 +39,7 @@ public class OssClientTest {
     @Test
     public void uploadFile() throws Exception {
 
-        ossClient.uploadFile(bucketName, key, "D:\\用户目录\\下载\\question.jpg");
+        ossClient.uploadFile(bucketName, key, "D:\\用户目录\\下载\\PanDownload_v1.4.3.zip");
     }
 
     @Test
