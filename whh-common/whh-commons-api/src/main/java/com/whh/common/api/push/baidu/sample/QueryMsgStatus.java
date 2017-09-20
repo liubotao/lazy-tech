@@ -36,7 +36,7 @@ public class QueryMsgStatus {
 
         try {
             // 4. specify request arguments
-            String[] msgIds = {"xxxxxxxxxxxxxxxxxx"};
+            String[] msgIds = {"4581768166976512771"};
             QueryMsgStatusRequest request = new QueryMsgStatusRequest()
                     .addMsgIds(msgIds)
                     .addDeviceType(3);
