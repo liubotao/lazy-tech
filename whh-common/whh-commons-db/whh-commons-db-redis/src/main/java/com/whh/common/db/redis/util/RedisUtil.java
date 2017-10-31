@@ -1,7 +1,7 @@
 package com.whh.common.db.redis.util;
 
-import com.wwwarehouse.commons.utils.AESUtil;
-import com.wwwarehouse.commons.utils.PropertiesFileUtil;
+import com.whh.common.utils.util.AESUtil;
+import com.whh.common.utils.util.PropertiesFileUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
