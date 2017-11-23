@@ -6,181 +6,153 @@ import org.apache.commons.logging.LogFactory;
 import java.sql.*;
 import java.util.ResourceBundle;
 
+/**
+ * JDBC连接工具类
+ * @author huahui.wu
+ */
 public class JdbcUtil {
-	private static final Log logger = LogFactory.getLog(JdbcUtil.class);
+    private static final Log logger = LogFactory.getLog(JdbcUtil.class);
+    private String url;
+    private String classDriver;
+    private String userName;
+    private String password;
+    private Connection conn = null;
+    private PreparedStatement pst = null;
+    private boolean hasBatch = false;
 
-	private String url;
-	private String classDriver;
-	private String userName;
-	private String password;
+    public JdbcUtil() {
+        this.conn = this.getConnectionNoPool();
+    }
 
-	private Connection conn = null;
-	private PreparedStatement pst = null;
-	private boolean hasBatch = false;
+    private Connection getConnectionNoPool() {
+        if (this.conn != null) {
+            return this.conn;
+        } else {
+            Connection connection = null;
 
-	public JdbcUtil() {
-		conn = getConnectionNoPool();
-	}
-//
-//	public JdbcUtil(ServletContext servletContext) {
-//		conn = getConnection(servletContext);
-//	}
-//
-//	public Connection getConnection(ServletContext servletContext) {
-//		if (conn != null) {
-//			return conn;
-//		}
-//		Connection connection = null;
-//		if (servletContext != null) {
-//			DataSource ds = (DataSource) SpringUtil.getBean("basicDataSource");
-//			try {
-//				connection = ds.getConnection();
-//			} catch (SQLException e) {
-//				logger.error("", e);
-//			}
-//		} else {
-//			connection = getConnectionNoPool();
-//		}
-//		return connection;
-//	}
+            try {
+                ResourceBundle rbn = ResourceBundle.getBundle("generator");
+                this.url = rbn.getString("generator.jdbc.url");
+                this.classDriver = rbn.getString("generator.jdbc.driver");
+                this.userName = rbn.getString("generator.jdbc.username");
+                this.password = rbn.getString("generator.jdbc.password");
+            } catch (Exception var5) {
+                logger.error("generator.properties not found", var5);
+            }
 
-//	public Connection getConnection() {
-//		if (ServletActionContext.getServletContext() != null) {
-//			return getConnection(ServletActionContext.getServletContext());
-//		} else {
-//			return getConnectionNoPool();
-//		}
-//	}
+            try {
+                Class.forName(this.classDriver);
+                connection = DriverManager.getConnection(this.url, this.userName, this.password);
+            } catch (ClassNotFoundException var3) {
+                logger.error("jdbc class not found", var3);
+            } catch (SQLException var4) {
+                logger.error("", var4);
+            }
 
+            return connection;
+        }
+    }
 
-	private Connection getConnectionNoPool() {
-		if (conn != null) {
-			return conn;
-		}
-		Connection connection = null;
-		try {
-			final ResourceBundle rbn = ResourceBundle.getBundle("generator");
-			this.url = rbn.getString("generator.jdbc.url");
-			this.classDriver = rbn.getString("generator.jdbc.driver");
-			this.userName = rbn.getString("generator.jdbc.username");
-			this.password = rbn.getString("generator.jdbc.password");
-		} catch (Exception e) {
-			logger.error("generator.properties not found", e);
-		}
-		try {
-			Class.forName(this.classDriver);
-			connection = DriverManager.getConnection(this.url, this.userName, this.password);
-		} catch (ClassNotFoundException e) {
-			logger.error("jdbc class not found", e);
-		} catch (SQLException e) {
-			logger.error("", e);
-		}
-		return connection;
-	}
+    public ResultSet executeQuery(String sql) throws SQLException {
+        logger.debug(sql);
+        this.pst = this.conn.prepareStatement(sql, 1004, 1007);
+        return this.pst.executeQuery();
+    }
 
-	public ResultSet executeQuery(String sql) throws SQLException {
-		logger.debug(sql);
-		pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		return pst.executeQuery();
-	}
+    public Object executeScalar(String sql) throws SQLException {
+        ResultSet rs = this.executeQuery(sql);
+        return rs.first() ? rs.getObject(1) : null;
+    }
 
-	/**
-	 * 返回第一行第一列的数据
-	 *
-	 * @param sql
-	 * @return
-	 * @throws SQLException
-	 */
-	public Object executeScalar(String sql) throws SQLException {
-		ResultSet rs = this.executeQuery(sql);
-		if (rs.first()) {
-			return rs.getObject(1);
-		} else {
-			return null;
-		}
-	}
+    public ResultSet executeQuery(String sql, Object[] objs) throws SQLException {
+        logger.debug(sql);
+        this.pst = this.conn.prepareStatement(sql, 1004, 1007);
+        if (objs != null) {
+            for (int i = 0; i < objs.length; ++i) {
+                this.pst.setObject(i + 1, objs[i]);
+            }
+        }
 
-	public ResultSet executeQuery(String sql, Object[] objs) throws SQLException {
-		logger.debug(sql);
-		pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        return this.pst.executeQuery();
+    }
 
-		if (objs != null) {
-			for (int i = 0; i < objs.length; i++) {
-				pst.setObject(i + 1, objs[i]);
-			}
-		}
+    public int executeUpdate(String sql) throws SQLException {
+        logger.debug(sql);
+        this.pst = this.conn.prepareStatement(sql);
+        return this.pst.executeUpdate();
+    }
 
-		return pst.executeQuery();
-	}
+    public int executeUpdate(String sql, Object[] objs) throws SQLException {
+        logger.debug(sql);
+        this.pst = this.conn.prepareStatement(sql);
+        if (objs != null) {
+            for (int i = 0; i < objs.length; ++i) {
+                this.pst.setObject(i + 1, objs[i]);
+            }
+        }
 
-	public int executeUpdate(String sql) throws SQLException {
-		logger.debug(sql);
-		pst = conn.prepareStatement(sql);
-		return pst.executeUpdate();
-	}
+        return this.pst.executeUpdate();
+    }
 
-	public int executeUpdate(String sql, Object[] objs) throws SQLException {
-		logger.debug(sql);
-		pst = conn.prepareStatement(sql);
-		if (objs != null) {
-			for (int i = 0; i < objs.length; i++) {
-				pst.setObject(i + 1, objs[i]);
-			}
-		}
-		return pst.executeUpdate();
-	}
+    public void addBatch(String sql, Object[] objs) throws SQLException {
+        logger.debug(sql);
+        if (this.pst == null && !this.hasBatch) {
+            this.pst = this.conn.prepareStatement(sql);
+        }
 
-	public void addBatch(String sql, Object[] objs) throws SQLException {
-		logger.debug(sql);
-		if (pst == null && !hasBatch) {
-			pst = conn.prepareStatement(sql);
-		}
-		if (objs != null) {
-			for (int i = 0; i < objs.length; i++) {
-				pst.setObject(i + 1, objs[i]);
-			}
-		}
-		if (null != pst) {
-			pst.addBatch();
-			hasBatch = true;
-		}
-	}
+        if (objs != null) {
+            for (int i = 0; i < objs.length; ++i) {
+                this.pst.setObject(i + 1, objs[i]);
+            }
+        }
 
-	public int[] executeBatch() throws SQLException {
-		if (!hasBatch) {
-			throw new SQLException("Do not add batch");
-		}
-		hasBatch = false;
-		return pst.executeBatch();
-	}
+        if (null != this.pst) {
+            this.pst.addBatch();
+            this.hasBatch = true;
+        }
 
-	public void close() {
-		try {
-			if (pst != null) {
-				pst.close();
-				pst = null;
-			}
-		} catch (Exception ex) {
-		}
-		try {
-			if (conn != null) {
-				conn.close();
-				conn = null;
-			}
-		} catch (Exception ex) {
-		}
-	}
+    }
 
-	public void beginTransaction() throws SQLException {
-		conn.setAutoCommit(false);
-	}
+    public int[] executeBatch() throws SQLException {
+        if (!this.hasBatch) {
+            throw new SQLException("Do not add batch");
+        } else {
+            this.hasBatch = false;
+            return this.pst.executeBatch();
+        }
+    }
 
-	public void commitTransaction() throws SQLException {
-		conn.commit();
-		conn.setAutoCommit(true);
-	}
+    public void close() {
+        try {
+            if (this.pst != null) {
+                this.pst.close();
+                this.pst = null;
+            }
+        } catch (Exception var3) {
+            ;
+        }
 
-	public void rollbackTransaction() throws SQLException {
-		conn.rollback();
-	}
+        try {
+            if (this.conn != null) {
+                this.conn.close();
+                this.conn = null;
+            }
+        } catch (Exception var2) {
+            ;
+        }
+
+    }
+
+    public void beginTransaction() throws SQLException {
+        this.conn.setAutoCommit(false);
+    }
+
+    public void commitTransaction() throws SQLException {
+        this.conn.commit();
+        this.conn.setAutoCommit(true);
+    }
+
+    public void rollbackTransaction() throws SQLException {
+        this.conn.rollback();
+    }
 }
