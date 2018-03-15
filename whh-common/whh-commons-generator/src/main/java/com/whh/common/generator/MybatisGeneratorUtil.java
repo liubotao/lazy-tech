@@ -167,7 +167,7 @@ public class MybatisGeneratorUtil {
 
         System.out.println("========== 开始生成Manager ==========");
         String ctime = new SimpleDateFormat("yyyy/M/d").format(new Date());
-        String servicePath = ManagerModule + "/src/main/java/" + package_name.replaceAll("\\.", "/") + "/biz/manager";
+        String servicePath = ManagerModule + "/src/main/java/" + package_name.replaceAll("\\.", "/") + "/manager";
         String serviceImplPath = servicePath + "/impl";
         String serviceMockPath = servicePath + "/mock";
         for (int i = 0; i < tables.size(); i++) {
