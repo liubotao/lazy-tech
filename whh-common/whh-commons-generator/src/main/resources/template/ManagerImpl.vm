@@ -1,11 +1,11 @@
-package ${package_name}.biz.manager.impl;
+package ${package_name}.manager.impl;
 
 import com.whh.common.mybatis.base.BaseManagerImpl;
 import ${package_name}.dao.mapper.${model}DOMapper;
 import ${package_name}.model.${model};
 import ${package_name}.dao.model.${model}DO;
 import ${package_name}.dao.model.${model}DOExample;
-import ${package_name}.biz.manager.${model}Manager;
+import ${package_name}.manager.${model}Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
