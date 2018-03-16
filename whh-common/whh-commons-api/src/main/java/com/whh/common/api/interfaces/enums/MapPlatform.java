@@ -60,8 +60,9 @@ public enum MapPlatform {
 
     public static MapPlatform getPlatform(long id) {
         for (MapPlatform item : values()) {
-            if (item.id == id)
+            if (item.id == id) {
                 return item;
+            }
         }
 
         return null;
