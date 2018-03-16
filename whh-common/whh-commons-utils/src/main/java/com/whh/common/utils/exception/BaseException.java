@@ -4,7 +4,7 @@ package com.whh.common.utils.exception;
 import com.whh.common.utils.util.StringUtils;
 
 /**
- * baseException
+ *
  */
 public class BaseException extends Exception {
     private static final long serialVersionUID = -238091758285157331L;
