@@ -1,14 +1,19 @@
 package com.whh.common.mybatis.base;
 
+import com.whh.common.mybatis.base.BaseManager;
 import com.whh.common.mybatis.db.DataSourceEnum;
 import com.whh.common.mybatis.db.DynamicDataSource;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -17,47 +22,67 @@ import java.util.List;
  */
 public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> implements BaseManager<RecordDTO, Example> {
 
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+
 	public abstract Mapper getMapper();
 
 	public RecordDO convertDO(RecordDTO fromDTO) {
-        try {
-            Class<RecordDO> clazz = (Class<RecordDO>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
-            RecordDO toDO = clazz.newInstance();
-            BeanUtils.copyProperties(fromDTO, toDO);
-            return toDO;
-        } catch (InstantiationException e) {
-
-        } catch (IllegalAccessException e) {
-
-        }
-        return null;
+		if (fromDTO == null) {
+			return null;
+		}
+		try {
+			Class<RecordDO> clazz = (Class<RecordDO>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
+			RecordDO toDO = clazz.newInstance();
+			BeanUtils.copyProperties(fromDTO, toDO);
+			return toDO;
+		} catch (InstantiationException e) {
+			log.error("", e);
+		} catch (IllegalAccessException e) {
+			log.error("", e);
+		}
+		return null;
 	}
 
 	public RecordDTO convertDTO(RecordDO fromDO) {
-        try {
-            Class<RecordDTO> clazz = (Class<RecordDTO>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-            RecordDTO toDTO = clazz.newInstance();
-            BeanUtils.copyProperties(fromDO, toDTO);
-            return toDTO;
-        } catch (InstantiationException e) {
+		if (fromDO == null) {
+			return null;
+		}
+		try {
+			Class<RecordDTO> clazz = (Class<RecordDTO>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+			RecordDTO toDTO = clazz.newInstance();
+			BeanUtils.copyProperties(fromDO, toDTO);
+			return toDTO;
+		} catch (InstantiationException e) {
 
-        } catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 
-        }
-        return null;
+		}
+		return null;
 	}
 
-    protected List<RecordDTO> convertDTOList(List<RecordDO> doList){
-        List<RecordDTO> dtolist = new ArrayList<>();
-        if (doList == null) {
-            return dtolist;
-        }
-        for (RecordDO recordDO : doList) {
-            RecordDTO recordDTO = convertDTO(recordDO);
-            dtolist.add(recordDTO);
-        }
-        return dtolist;
-    }
+	protected List<RecordDTO> convertDTOList(List<RecordDO> doList){
+		List<RecordDTO> dtolist = new ArrayList<>();
+		if (doList == null) {
+			return dtolist;
+		}
+		for (RecordDO recordDO : doList) {
+			RecordDTO recordDTO = convertDTO(recordDO);
+			dtolist.add(recordDTO);
+		}
+		return dtolist;
+	}
+
+	protected List<RecordDO> convertDOList(List<RecordDTO> dtoList){
+		List<RecordDO> doList = new ArrayList<>();
+		if (dtoList == null) {
+			return doList;
+		}
+		for (RecordDTO recordDTO : dtoList) {
+			RecordDO recordDO = convertDO(recordDTO);
+			doList.add(recordDO);
+		}
+		return doList;
+	}
 
 	@Override
 	public int countByExample(Example example) {
@@ -67,7 +92,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = countByExample.invoke(getMapper(), example);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -81,7 +106,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = deleteByExample.invoke(getMapper(), example);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -95,7 +120,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = deleteByPrimaryKey.invoke(getMapper(), id);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -111,7 +136,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = insert.invoke(getMapper(), record);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -126,7 +151,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = insertSelective.invoke(getMapper(), record);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -138,9 +163,9 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			DynamicDataSource.setDataSource(DataSourceEnum.SLAVE.getName());
 			Method selectByExampleWithBLOBs = getMapper().getClass().getDeclaredMethod("selectByExampleWithBLOBs", example.getClass());
 			Object result = selectByExampleWithBLOBs.invoke(getMapper(), example);
-            return convertDTOList((List<RecordDO>) result);
+			return convertDTOList((List<RecordDO>) result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return null;
@@ -154,7 +179,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = selectByExample.invoke(getMapper(), example);
 			return convertDTOList((List<RecordDO>) result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return null;
@@ -170,7 +195,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 				return convertDTO(result.get(0));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return null;
@@ -186,7 +211,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 				return convertDTO(result.get(0));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return null;
@@ -200,7 +225,7 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			Object result = selectByPrimaryKey.invoke(getMapper(), id);
 			return convertDTO((RecordDO) result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return null;
@@ -209,13 +234,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByExampleSelective(@Param("record") RecordDTO recordDTO, @Param("example") Example example) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByExampleSelective = getMapper().getClass().getDeclaredMethod("updateByExampleSelective", record.getClass(), example.getClass());
 			Object result = updateByExampleSelective.invoke(getMapper(), record, example);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -224,13 +249,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByExampleWithBLOBs(@Param("record") RecordDTO recordDTO, @Param("example") Example example) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByExampleWithBLOBs = getMapper().getClass().getDeclaredMethod("updateByExampleWithBLOBs", record.getClass(), example.getClass());
 			Object result = updateByExampleWithBLOBs.invoke(getMapper(), record, example);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -239,13 +264,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByExample(@Param("record") RecordDTO recordDTO, @Param("example") Example example) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByExample = getMapper().getClass().getDeclaredMethod("updateByExample", record.getClass(), example.getClass());
 			Object result = updateByExample.invoke(getMapper(), record, example);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -254,13 +279,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByPrimaryKeySelective(RecordDTO recordDTO) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByPrimaryKeySelective = getMapper().getClass().getDeclaredMethod("updateByPrimaryKeySelective", record.getClass());
 			Object result = updateByPrimaryKeySelective.invoke(getMapper(), record);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -269,13 +294,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByPrimaryKeyWithBLOBs(RecordDTO recordDTO) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByPrimaryKeyWithBLOBs = getMapper().getClass().getDeclaredMethod("updateByPrimaryKeyWithBLOBs", record.getClass());
 			Object result = updateByPrimaryKeyWithBLOBs.invoke(getMapper(), record);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -284,13 +309,13 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 	@Override
 	public int updateByPrimaryKey(RecordDTO recordDTO) {
 		try {
-            RecordDO record = convertDO(recordDTO);
+			RecordDO record = convertDO(recordDTO);
 			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
 			Method updateByPrimaryKey = getMapper().getClass().getDeclaredMethod("updateByPrimaryKey", record.getClass());
 			Object result = updateByPrimaryKey.invoke(getMapper(), record);
 			return Integer.parseInt(String.valueOf(result));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
@@ -316,7 +341,33 @@ public abstract class BaseManagerImpl<Mapper, RecordDTO, RecordDO, Example> impl
 			}
 			return count;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("", e);
+		}
+		DynamicDataSource.clearDataSource();
+		return 0;
+	}
+
+	protected int deleteByPrimaryKeys(Collection<Long> ukids) {
+		try {
+			if (ukids == null || ukids.isEmpty()) {
+				return 0;
+			}
+			DynamicDataSource.setDataSource(DataSourceEnum.MASTER.getName());
+
+			int count = 0;
+			for (Long ukid : ukids) {
+
+				if (null == ukid) {
+					continue;
+				}
+				Method deleteByPrimaryKey = getMapper().getClass().getDeclaredMethod("deleteByPrimaryKey", ukid.getClass());
+				Object result = deleteByPrimaryKey.invoke(getMapper(), ukid);
+				count += Integer.parseInt(String.valueOf(result));
+			}
+
+			return count;
+		} catch (Exception e) {
+			log.error("", e);
 		}
 		DynamicDataSource.clearDataSource();
 		return 0;
