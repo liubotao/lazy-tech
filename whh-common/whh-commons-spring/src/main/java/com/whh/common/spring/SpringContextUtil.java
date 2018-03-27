@@ -1,8 +1,11 @@
 package com.whh.common.spring;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
 
@@ -81,6 +84,24 @@ public class SpringContextUtil implements ApplicationContextAware {
 	 */
 	public static Class getType(String beanName) {
 		return context.getType(beanName);
+	}
+
+	/**
+	 * 注册bean
+	 * @param beanName
+	 * @param className
+	 * @return
+	 */
+	public static Object registerBean(String beanName, Class className) {
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(className);
+		definition.setScope("singleton");
+		definition.setLazyInit(false);
+		definition.setAutowireCandidate(true);
+		ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext)context;
+		BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry)configurableApplicationContext.getBeanFactory();
+		beanDefinitionRegistry.registerBeanDefinition(beanName, definition);
+		return getBean(beanName);
 	}
 
 }
