@@ -1,5 +1,12 @@
 package com.whh.common.utils.base;
 
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContext;
+
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 统一返回结果类
  * Created by shuzheng on 2017/2/18.
@@ -10,14 +17,14 @@ public class BaseResult {
     public int code;
 
     // 成功为success，其他为失败原因
-    public String message;
+    public String msg;
 
     // 数据结果集
     public Object data;
 
-    public BaseResult(int code, String message, Object data) {
+    public BaseResult(int code, String msg, Object data) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
         this.data = data;
     }
 
@@ -30,11 +37,11 @@ public class BaseResult {
     }
 
     public String getMessage() {
-        return message;
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(String msg) {
+        this.msg = msg;
     }
 
     public Object getData() {
@@ -45,4 +52,21 @@ public class BaseResult {
         this.data = data;
     }
 
+    public BaseResult setCode(int code, Object... params) {
+        this.code = code;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        RequestContext requestContext = new RequestContext(request);
+        try {
+            if (params != null && params.length > 0) {
+                this.msg = requestContext.getMessage(String.valueOf(code), params);
+            } else {
+                this.msg = requestContext.getMessage(String.valueOf(code));
+            }
+        } catch (NoSuchMessageException e) {
+            // 默认
+            this.msg = "";//String.valueOf(code);
+        }
+
+        return this;
+    }
 }
