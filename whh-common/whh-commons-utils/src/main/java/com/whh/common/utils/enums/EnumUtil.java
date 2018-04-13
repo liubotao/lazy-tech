@@ -1,7 +1,8 @@
 package com.whh.common.utils.enums;
 
 import com.whh.common.utils.db.JdbcUtil;
-import com.whh.common.utils.util.StringUtils;
+import com.whh.common.utils.util.DateUtil;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,22 +13,36 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 枚举生成工具类，2
- * Created by huahui.wu on 2017/11/23.
+ * 字典表枚举生成
+ *
+ * @author huahui.wu.
+ * Created on 2018/4/13.
  */
 public class EnumUtil {
-
     private static BufferedWriter out;
 
     private static String[] filterKeys = {"TIME_UNIT"};
+
+    /**
+     * 本方法已作废，请使用<code>EnumUtil.createEnumFile(packagePath, fileName, filePath)</code><br/>
+     * 所生成文件需要注意的地方：
+     * code数据：
+     * 如果为数字，则带有NUMBER前缀
+     * 如果为负数，则带有NEGATIVE前缀
+     * 如果类型为时间单位，则没有做大小写转换
+     *
+     * @param packagePath
+     * @param fileName
+     */
+    @Deprecated
+    public static String createEuumFile(String packagePath, String fileName, String filePath) throws IOException {
+        return createEnumFile(packagePath, fileName, filePath);
+    }
 
     /**
      * 所生成文件需要注意的地方：
@@ -39,7 +54,7 @@ public class EnumUtil {
      * @param packagePath
      * @param fileName
      */
-    public static String createEuumFile(String packagePath, String fileName, String filePath) throws IOException {
+    public static String createEnumFile(String packagePath, String fileName, String filePath) throws IOException {
         //文件名合法性验证
         RegResult result = handClassName(fileName);
         String className = "";
@@ -79,14 +94,16 @@ public class EnumUtil {
         return "生成成功";
     }
 
-    //			t.defined_code_type,t.display_code, t.defined_code, t.defined_name
+    /**
+     * 字段：t.defined_code_type,t.display_code, t.defined_code, t.defined_name
+     */
     private static Map<String, List<Map>> getDbData() throws IOException, SQLException {
         Map<String, List<Map>> map = new HashMap<>();
         JdbcUtil jdbc = new JdbcUtil();
 
         List<Map<String, Object>> records = null;
         try {
-            String sql = "select * from BA_DEFINED_CODE order by defined_code,display_seq asc";
+            String sql = "select * from ba_defined_code order by defined_code,display_seq asc";
             ResultSet rs = jdbc.executeQuery(sql);
             records = getRecords(rs);
         } finally {
@@ -140,13 +157,17 @@ public class EnumUtil {
         return obj == null ? null : obj.toString();
     }
 
+    public static String quotationedString(String key) {
+        return key == null ? null : "\"" + key + "\"";
+    }
+
     private static void createEnumFile(Map<String, List<Map>> map) throws IOException {
         for (String key : map.keySet()) {
             List<Map> contents = map.get(key);
 
             String enumName = key.toUpperCase();
 
-            String temp1 = "        {0}({1}, \"{2}\"),\n";
+            String temp1 = "        {0}({1}, {2}, {3}),\n";
             StringBuffer conts = new StringBuffer("");
             String DATA_TYPE = null;
             for (int i = 0; i < contents.size(); i++) {
@@ -154,6 +175,7 @@ public class EnumUtil {
                 String DISPLAY_CODE = getMapValue(jso, "DISPLAY_CODE");
                 String DEFINED_CODE = getMapValue(jso, "DEFINED_CODE");
                 String DEFINED_NAME = getMapValue(jso, "DEFINED_NAME");
+                String HANDLE_CODE = getMapValue(jso, "HANDLE_CODE");
                 if (StringUtils.isNotEmpty(DEFINED_NAME)) {
                     DEFINED_NAME = DEFINED_NAME.replaceAll("[\n|\r]{1,}", "");
                 }
@@ -192,7 +214,7 @@ public class EnumUtil {
                     DEFINED_CODE_V = "\"" + DEFINED_CODE + "\"";
                 }
 
-                String item = MessageFormat.format(temp1, DISPLAY_CODE, DEFINED_CODE_V, DEFINED_NAME);
+                String item = MessageFormat.format(temp1, DISPLAY_CODE, DEFINED_CODE_V, quotationedString(DEFINED_NAME), quotationedString(HANDLE_CODE));
                 conts.append(item);
             }
             conts.append("        ;");
@@ -208,15 +230,17 @@ public class EnumUtil {
         }
     }
 
-    static String format = "    public enum {ENUM_NAME} {\n" +
+    private static String format = "    public enum {ENUM_NAME} {\n" +
             "{ENUM_LIST}" +
             "\n" +
             "        private {DATA_TYPE} code;\n" +
             "        private String name;\n" +
+            "        private String handleCode;\n" +
             "\n" +
-            "        {ENUM_NAME}({DATA_TYPE} code, String name) {\n" +
+            "        {ENUM_NAME}({DATA_TYPE} code, String name, String handleCode) {\n" +
             "            this.code = code;\n" +
             "            this.name = name;\n" +
+            "            this.handleCode = handleCode;\n" +
             "        }\n" +
             "\n" +
             "        public {DATA_TYPE} getCode() {\n" +
@@ -227,9 +251,13 @@ public class EnumUtil {
             "            return this.name;\n" +
             "        }\n" +
             "\n" +
+            "        public String getHandleCode() {\n" +
+            "            return this.handleCode;\n" +
+            "        }\n" +
+            "\n" +
             "        @Override\n" +
             "        public String toString() {\n" +
-            "            return (\"name = \" + this.name + \",\" + \"code = \" + this.code);\n" +
+            "            return (\"handleCode = \" + this.handleCode + \",name = \" + this.name + \",code = \" + this.code);\n" +
             "        }\n" +
             "\n" +
             "        public boolean equalByCode({DATA_TYPE} code) {\n" +
@@ -246,14 +274,29 @@ public class EnumUtil {
             "        }\n" +
             "    }\n";
 
+    /**
+     * 所生成文件需要注意的地方：
+     * code数据：
+     * 如果为数字，则带有NUMBER前缀
+     * 如果为负数，则带有NEGATIVE前缀
+     * 如果类型为时间单位，则没有做大小写转换
+     *
+     * @param packagePath
+     * @param className
+     */
     private static void initFile(String packagePath, String className) throws IOException {
         StringBuffer content = new StringBuffer("");
 
         content.append("package " + packagePath + ";\n\r");
+
+        content.append("/**").append("\n");
+        content.append(" * 本类是字典表的枚举类集合，由工具类生成").append("\n");
+        content.append(" * @author EnumUtil.java").append("\n");
+        content.append(" * @Datetime ").append(DateUtil.toDateTimeString(new Date())).append("\n");
+        content.append(" */").append("\n");
         content.append("public class " + className + " {").append("\n");
         out.write(content.toString());
     }
-
 
     private static boolean inFilter(String key) {
         for (String filter : filterKeys) {
